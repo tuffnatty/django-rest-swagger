@@ -421,6 +421,11 @@ class BaseMethodIntrospector(object):
                     parameter['enum'] = [choice[0] for choice
                                          in itertools.chain(multiple_choices)]
                     parameter['type'] = 'enum'
+
+                # description of null is not allowed
+                if parameter['description'] is None:
+                    del parameter['description']
+
                 params.append(parameter)
 
         return params

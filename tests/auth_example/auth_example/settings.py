@@ -85,7 +85,7 @@ STATICFILES_FINDERS = (
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'pzuck!20c0+^rq8u^(@0-+f^to(j*+%+@4ee21(qj9b=1w$&v2'
 
-if django.VERSION < '1.8':
+if django.get_version() < '1.8':
     # List of callables that know how to import templates from various sources.
     TEMPLATE_LOADERS = (
         'django.template.loaders.filesystem.Loader',

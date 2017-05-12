@@ -1,4 +1,4 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from rest_framework.routers import DefaultRouter
 
 from cigar_example.restapi import views as views
@@ -8,8 +8,7 @@ router = DefaultRouter()
 router.register(r'cigars', views.CigarViewSet)
 router.register(r'artisan_cigars', views.ArtisanCigarViewSet)
 
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     # Examples:
     url(r'^custom$', views.MyCustomView.as_view()),
     url(r'^manufacturers/?$', views.ManufacturerList.as_view(), name='list_of_manufacturers'),
@@ -23,6 +22,6 @@ urlpatterns = patterns(
     url(r'^drop_cigar_in_jambalaya/$', views.drop_cigar_in_jambalaya, name='cigar-jambalaya'),
     url(r'^mix_cigars_in_jambalaya/$', views.mix_cigars_in_jambalaya, name='mix-cigars-jambalaya'),
     url(r'^custom_create/$', views.create_cigar2, name='custom-create-cigar'),
-)
+]
 
 urlpatterns += router.urls

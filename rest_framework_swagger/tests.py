@@ -98,7 +98,6 @@ def parse_json(response):
 class HTTPSTest(TestCase):
     def setUp(self):
         self.url_patterns = [
-            '',
             url(r'a-view/?$', MockApiView.as_view(), name='a test view'),
             url(r'^swagger/', include('rest_framework_swagger.urls')),
         ]

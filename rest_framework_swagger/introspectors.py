@@ -3,7 +3,6 @@
 """Handles the instrospection of REST Framework Views and ViewSets."""
 
 import inspect
-import itertools
 import re
 import yaml
 import importlib

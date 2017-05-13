@@ -16,6 +16,7 @@ from .introspectors import (
     get_primitive_type
 )
 from .compat import OrderedDict
+from .decorators import is_api_view_wrapper
 
 
 class DocumentationGenerator(object):
@@ -59,7 +60,7 @@ class DocumentationGenerator(object):
         path = api['path']
         pattern = api['pattern']
         callback = api['callback']
-        if callback.__module__ == 'rest_framework.decorators':
+        if is_api_view_wrapper(callback):
             return WrappedAPIViewIntrospector(callback, path, pattern, self.user)
         elif issubclass(callback, viewsets.ViewSetMixin):
             patterns = [a['pattern'] for a in apis

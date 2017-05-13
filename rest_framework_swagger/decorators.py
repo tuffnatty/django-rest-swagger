@@ -54,3 +54,17 @@ def wrapper_to_func(wrapper):
 
 def func_to_wrapper(func):
     return func.cls
+
+
+def is_api_view_wrapper(wrapper):
+    try:
+        noms = wrapper.http_method_names
+        handlers = [getattr(wrapper, m) for m in noms if m != 'options']
+    except AttributeError:
+        return False
+    if not handlers or handlers.count(handlers[0]) != len(handlers):
+        return False
+    code = six.get_function_code(handlers[0])
+    return (code.co_filename.endswith('decorators.py') and
+            code.co_name == 'handler' and
+            code.co_freevars == ('func',))

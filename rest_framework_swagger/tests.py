@@ -1099,7 +1099,7 @@ class ViewSetMethodIntrospectorTests(TestCase):
                            'name': 'choices',
                            'description': 'Choices of possible first names',
                            'enum': ['foo', 'bar'],
-                           'type': 'enum'
+                           'type': 'string'
                            }
                           ])
 

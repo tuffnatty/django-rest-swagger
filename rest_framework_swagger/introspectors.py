@@ -418,9 +418,7 @@ class BaseMethodIntrospector(object):
                 normalize_data_format(data_type, None, parameter)
                 multiple_choices = filter_.extra.get('choices', {})
                 if multiple_choices:
-                    parameter['enum'] = [choice[0] for choice
-                                         in itertools.chain(multiple_choices)]
-                    parameter['type'] = 'enum'
+                    parameter['enum'] = [choice[0] for choice in multiple_choices]
                 params.append(parameter)
 
         return params

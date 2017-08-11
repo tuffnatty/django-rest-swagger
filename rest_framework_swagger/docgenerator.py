@@ -330,6 +330,10 @@ class DocumentationGenerator(object):
             # if data_type in BaseMethodIntrospector.PRIMITIVES:
                 # data_format = BaseMethodIntrospector.PRIMITIVES.get(data_type)[0]
 
+            items_type = None
+            if data_type == 'array':
+                items_type, items_format = get_data_type(field.child)
+
             choices = []
             if data_type in BaseMethodIntrospector.ENUMS:
                 if isinstance(field.choices, list):
@@ -406,6 +410,11 @@ class DocumentationGenerator(object):
                         f['items'] = {'$ref': field_serializer}
                     elif data_type in BaseMethodIntrospector.PRIMITIVES:
                         f['items'] = {'type': data_type}
+
+            if items_type:
+                f['items'] = {'type': items_type}
+                if items_format != items_type:
+                    f['items']['format'] = items_format
 
             # memorize discovered field
             data['fields'][name] = f

@@ -453,6 +453,10 @@ class BaseMethodIntrospector(object):
             # if data_type in self.PRIMITIVES:
                 # data_format = self.PRIMITIVES.get(data_type)[0]
 
+            items_type = None
+            if data_type == 'array':
+                items_type, items_format = get_data_type(field.child)
+
             choices = []
             if data_type in BaseMethodIntrospector.ENUMS:
                 if isinstance(field.choices, list):
@@ -494,6 +498,12 @@ class BaseMethodIntrospector(object):
             # ENUM options
             if choices:
                 f['enum'] = choices
+
+            if items_type:
+                items = {'type': items_type}
+                if items_format != items_type:
+                    items['format'] = items_format
+                f['items'] = items
 
             data.append(f)
 

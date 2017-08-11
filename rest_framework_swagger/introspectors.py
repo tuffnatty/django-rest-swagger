@@ -402,20 +402,22 @@ class BaseMethodIntrospector(object):
 
     def build_query_parameters_from_django_filters(self):
         """
-        introspect ``django_filters.FilterSet`` instances.
+        introspect ``django_filters.filterset.BaseFilterSet`` instances.
         """
         params = []
         filter_class = getattr(self.callback, 'filter_class', None)
         if (filter_class is not None and
-                issubclass(filter_class, django_filters.FilterSet)):
+                issubclass(filter_class, django_filters.filterset.BaseFilterSet)):
+            from django.forms.fields import DateField, NullBooleanField
             for name, filter_ in filter_class.base_filters.items():
-                data_type = 'string'
+                data_type = 'boolean' if filter_.field_class is NullBooleanField else 'string'
+                data_format = 'date' if filter_.field_class is DateField else None
                 parameter = {
                     'paramType': 'query',
                     'name': name,
                     'description': filter_.label,
                 }
-                normalize_data_format(data_type, None, parameter)
+                normalize_data_format(data_type, data_format, parameter)
                 multiple_choices = filter_.extra.get('choices', {})
                 if multiple_choices:
                     parameter['enum'] = [choice[0] for choice

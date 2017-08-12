@@ -1098,7 +1098,8 @@ class ViewSetMethodIntrospectorTests(TestCase):
                           {'paramType': 'query',
                            'name': 'choices',
                            'description': 'Choices of possible first names',
-                           'enum': ['foo', 'bar'],
+                           'enum': (['', 'foo', 'bar'] if django_filters.__version__ >= '1.0.0'
+                                    else ['foo', 'bar']),
                            'type': 'enum'
                            }
                           ])

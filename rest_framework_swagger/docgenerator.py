@@ -346,17 +346,16 @@ class DocumentationGenerator(object):
                 # guest data type and format
                 data_type, data_format = get_primitive_type(choices[0]) or ('string', 'string')
 
-            description = getattr(field, 'help_text', '')
-            if not description or description.strip() == '':
-                description = None
             f = {
-                'description': description,
+                'description': getattr(field, 'help_text', ''),
                 'type': data_type,
                 'format': data_format,
                 'required': getattr(field, 'required', False),
                 'defaultValue': get_default_value(field),
                 'readOnly': getattr(field, 'read_only', None),
             }
+            if not f['description'] or not f['description'].strip():
+                del f['description']
 
             # Swagger type is a primitive, format is more specific
             if f['type'] == f['format']:

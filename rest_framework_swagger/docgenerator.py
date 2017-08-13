@@ -165,6 +165,8 @@ class DocumentationGenerator(object):
                 'required': [i for i in data['required'] if i in w_properties.keys()],
                 'properties': w_properties,
             }
+            if not models[w_name]['required']:
+                del models[w_name]['required']
 
             # Reading
             # no write_only fields
@@ -178,6 +180,8 @@ class DocumentationGenerator(object):
                 'required': [i for i in r_properties.keys()],
                 'properties': r_properties,
             }
+            if not models[r_name]['required']:
+                del models[r_name]['required']
 
             # Enable original model for testing purposes
             # models[serializer_name] = {

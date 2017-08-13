@@ -29,6 +29,9 @@ class DocumentationGenerator(object):
     # Response classes defined in docstrings
     explicit_response_types = dict()
 
+    # Serializers referenced with $ref
+    ref_serializers = set()
+
     def __init__(self, for_user=None):
 
         # unauthenticated user is expected to be in the form 'module.submodule.Class' if a value is present
@@ -124,7 +127,7 @@ class DocumentationGenerator(object):
             # array response
             if method_introspector.is_array_response:
                 operation['items'] = {
-                    '$ref': operation['type']
+                    '$ref': self.get_ref(operation['type'])
                 }
                 operation['type'] = 'array'
 
@@ -193,7 +196,17 @@ class DocumentationGenerator(object):
 
         models.update(self.explicit_response_types)
         models.update(self.fields_serializers)
+
+        # Remove unused serializers
+        for name in list(models):
+            if name not in self.ref_serializers:
+                del models[name]
+
         return models
+
+    def get_ref(self, serializer):
+        self.ref_serializers.add(serializer)
+        return serializer
 
     def _get_method_serializer(self, method_inspector):
         """
@@ -402,7 +415,9 @@ class DocumentationGenerator(object):
                         if getattr(field, 'write_only', False):
                             field_serializer = "Write{}".format(field_serializer)
 
-                        f['type'] = field_serializer
+                        if not has_many:
+                            f['$ref'] = self.get_ref(field_serializer)
+                        del f['type']
                 else:
                     field_serializer = None
                     data_type = 'string'
@@ -410,7 +425,7 @@ class DocumentationGenerator(object):
                 if has_many:
                     f['type'] = 'array'
                     if field_serializer:
-                        f['items'] = {'$ref': field_serializer}
+                        f['items'] = {'$ref': self.get_ref(field_serializer)}
                     elif data_type in BaseMethodIntrospector.PRIMITIVES:
                         f['items'] = {'type': data_type}
 

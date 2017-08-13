@@ -348,7 +348,6 @@ class DocumentationGenerator(object):
                 'description': description,
                 'type': data_type,
                 'format': data_format,
-                'required': getattr(field, 'required', False),
                 'defaultValue': get_default_value(field),
                 'readOnly': getattr(field, 'read_only', None),
             }

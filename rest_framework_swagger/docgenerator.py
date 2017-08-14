@@ -94,6 +94,9 @@ class DocumentationGenerator(object):
             response_type = self._get_method_response_type(
                 doc_parser, serializer, introspector, method_introspector)
 
+            if response_type != 'object':
+                self.get_ref(response_type)
+
             operation = {
                 'method': method_introspector.get_http_method(),
                 'summary': method_introspector.get_summary(),
@@ -111,6 +114,9 @@ class DocumentationGenerator(object):
                 inspector=method_introspector)
 
             operation['parameters'] = parameters or []
+            for param in operation['parameters']:
+                if param['type'] not in BaseMethodIntrospector.PRIMITIVES:
+                    self.get_ref(param['type'])
 
             if response_messages:
                 operation['responseMessages'] = response_messages
@@ -194,13 +200,14 @@ class DocumentationGenerator(object):
             #     'properties': data['fields'],
             # }
 
-        models.update(self.explicit_response_types)
         models.update(self.fields_serializers)
 
         # Remove unused serializers
         for name in list(models):
             if name not in self.ref_serializers:
                 del models[name]
+
+        models.update(self.explicit_response_types)
 
         return models
 

@@ -519,6 +519,7 @@ class DocumentationGeneratorTest(TestCase, DocumentationGeneratorMixin):
         apis = urlparser.get_apis(url_patterns)
 
         docgen = self.get_documentation_generator()
+        docgen.generate(apis)
         models = docgen.get_models(apis)
 
         self.assertIn('CommentSerializer', models)
@@ -639,7 +640,9 @@ class DocumentationGeneratorTest(TestCase, DocumentationGeneratorMixin):
         fields = docgen._get_serializer_fields(OtherSerializer)
 
         self.assertEqual(1, len(fields['fields']))
-        self.assertEqual("SomeSerializer", fields['fields']['thing2']['type'])
+        self.assertIn("$ref", fields['fields']['thing2'])
+        self.assertNotIn("type", fields['fields']['thing2'])
+        self.assertEqual("SomeSerializer", fields['fields']['thing2']['$ref'])
 
     def test_get_serializer_fields_api_with_nested_many(self):
         class SomeSerializer(serializers.Serializer):
@@ -1343,6 +1346,14 @@ class BaseMethodIntrospectorTest(TestCase, DocumentationGeneratorMixin):
             hidden = serializers.HiddenField(default=42)
 
         class SerializedAPI(ListCreateAPIView):
+            """
+            ---
+            POST:
+                parameters:
+                    - name: HiddenSerializer
+                      type: WriteHiddenSerializer
+                      paramType: body
+            """
             serializer_class = HiddenSerializer
 
         class_introspector = self.make_introspector2(SerializedAPI)
@@ -1355,6 +1366,7 @@ class BaseMethodIntrospectorTest(TestCase, DocumentationGeneratorMixin):
         urlparser = UrlParser()
         generator = self.get_documentation_generator()
         apis = urlparser.get_apis(url_patterns)
+        generator.generate(apis)
         models = generator.get_models(apis)
         self.assertIn("HiddenSerializer", models)
         properties = models["HiddenSerializer"]['properties']
@@ -1384,6 +1396,7 @@ class BaseMethodIntrospectorTest(TestCase, DocumentationGeneratorMixin):
         urlparser = UrlParser()
         generator = self.get_documentation_generator()
         apis = urlparser.get_apis(url_patterns)
+        generator.generate(apis)
         models = generator.get_models(apis)
         self.assertIn("KitchenSinkSerializer", models)
         properties = models["KitchenSinkSerializer"]['properties']
@@ -2028,9 +2041,10 @@ class YAMLDocstringParserTests(TestCase, DocumentationGeneratorMixin):
         url_patterns = [url(r'my-api/', SerializedAPI.as_view())]
         urlparser = UrlParser()
         apis = urlparser.get_apis(url_patterns)
+        generator.generate(apis)
         models = generator.get_models(apis)
         self.assertIn('SerializedAPIPostResponse', models)
-        self.assertIn('WriteCommentSerializer', models)
+        self.assertNotIn('WriteCommentSerializer', models)
         self.assertIn('CommentSerializer', models)
         self.assertNotIn('QuerySerializer', models)
         self.assertNotIn('WriteQuerySerializer', models)

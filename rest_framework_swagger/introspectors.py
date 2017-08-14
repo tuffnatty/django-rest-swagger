@@ -494,10 +494,10 @@ class BaseMethodIntrospector(object):
             max_value = getattr(field, 'max_value', None)
             min_value = getattr(field, 'min_value', None)
             if max_value is not None and data_type == 'integer':
-                f['minimum'] = min_value
+                f['minimum'] = str(min_value)
 
             if max_value is not None and data_type == 'integer':
-                f['maximum'] = max_value
+                f['maximum'] = str(max_value)
 
             # ENUM options
             if choices:

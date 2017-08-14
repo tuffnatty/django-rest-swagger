@@ -1799,6 +1799,27 @@ class YAMLDocstringParserTests(TestCase, DocumentationGeneratorMixin):
         self.assertIn('maximum', params[0])
         self.assertEqual(params[0]['maximum'], '100')
 
+    def test_parameters_minimum_is_string_with_introspection(self):
+        '''
+        minimum and maximum of Parameter Object required by
+        Swagger 1.2 spec to be string.
+        '''
+        class CommentSerializer(serializers.Serializer):
+            some_bigint = serializers.IntegerField(min_value=1, max_value=100)
+
+        class SerializedAPI(ListCreateAPIView):
+            serializer_class = CommentSerializer
+
+        class_introspector = self.make_introspector(SerializedAPI)
+        introspector = APIViewMethodIntrospector(class_introspector, 'POST')
+        parser = introspector.get_yaml_parser()
+        params = parser.discover_parameters(introspector)
+        self.assertEqual(len(params), 1)
+        self.assertIn('minimum', params[0])
+        self.assertEqual(params[0]['minimum'], '1')
+        self.assertIn('maximum', params[0])
+        self.assertEqual(params[0]['maximum'], '100')
+
     def test_response_messages(self):
         class SerializedAPI(ListCreateAPIView):
             serializer_class = CommentSerializer

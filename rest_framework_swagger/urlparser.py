@@ -97,7 +97,7 @@ class UrlParser(object):
         return list(filtered_paths)
 
     def __get_base_path__(self, root_paths):
-        base_path = os.path.commonprefix(root_paths)
+        base_path = os.path.commonprefix(list(root_paths))
         slash_index = base_path.rfind('/') + 1
         base_path = base_path[:slash_index]
 
